@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Book;
 use App\Form\BookType;
 use App\Repository\BookRepository;
+use App\Services\BookApiService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -14,6 +15,13 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class BookController extends AbstractController
 {
+    public function __construct(
+        private BookApiService $bookApiService
+    )
+    {
+        
+    }
+
     #[Route('/', name: 'app_book_index', methods: ['GET'])]
     public function index(BookRepository $bookRepository): Response
     {
@@ -32,6 +40,8 @@ class BookController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $book->setUser($this->getUser());
+            $this->bookApiService->completeBookInfos($book);
+
             $entityManager->persist($book);
             $entityManager->flush();
 

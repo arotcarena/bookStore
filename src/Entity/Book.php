@@ -28,7 +28,7 @@ class Book
     private ?string $author = null;
 
     #[ORM\Column(nullable: true)]
-    private ?\DateTimeImmutable $publishedAt = null;
+    private ?string $publishedAt = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $isbn = null;
@@ -45,6 +45,9 @@ class Book
 
     #[ORM\Column(length: 255)]
     private ?string $slug = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $thumbnail = null;
 
     #[ORM\PrePersist]
     public function setCreatedAtValue()
@@ -88,12 +91,12 @@ class Book
         return $this;
     }
 
-    public function getPublishedAt(): ?\DateTimeImmutable
+    public function getPublishedAt(): ?string
     {
         return $this->publishedAt;
     }
 
-    public function setPublishedAt(?\DateTimeImmutable $publishedAt): static
+    public function setPublishedAt(?string $publishedAt): static
     {
         $this->publishedAt = $publishedAt;
 
@@ -156,6 +159,18 @@ class Book
     public function setSlug(string $slug): static
     {
         $this->slug = $slug;
+
+        return $this;
+    }
+
+    public function getThumbnail(): ?string
+    {
+        return $this->thumbnail;
+    }
+
+    public function setThumbnail(?string $thumbnail): static
+    {
+        $this->thumbnail = $thumbnail;
 
         return $this;
     }

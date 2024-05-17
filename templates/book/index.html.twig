@@ -8,7 +8,7 @@
     <table class="table">
         <thead>
             <tr>
-                <th>Id</th>
+                <th>Image</th>
                 <th>Title</th>
                 <th>Author</th>
                 <th>PublishedAt</th>
@@ -21,10 +21,14 @@
         <tbody>
         {% for book in books %}
             <tr>
-                <td>{{ book.id }}</td>
+                <td>
+                    {% if book.thumbnail %}
+                        <img src="{{ book.thumbnail }}" alt="book picture">
+                    {% endif %}
+                </td>
                 <td>{{ book.title }}</td>
                 <td>{{ book.author }}</td>
-                <td>{{ book.publishedAt ? book.publishedAt|date('Y-m-d H:i:s') : '' }}</td>
+                <td>{{ book.publishedAt }}</td>
                 <td>{{ book.isbn }}</td>
                 <td>{{ book.createdAt ? book.createdAt|date('Y-m-d H:i:s') : '' }}</td>
                 <td>{{ book.updatedAt ? book.updatedAt|date('Y-m-d H:i:s') : '' }}</td>
