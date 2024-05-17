@@ -1,0 +1,25 @@
+<div class="book-card">
+  {% if book.thumbnail %}
+    <a href="{{ path('app_book_show', {slug: book.slug}) }}">
+        <img src="{{ book.thumbnail }}" class="book-card-img" alt"book picture">
+    </a>
+  {% endif %}
+  <div class="book-card-body">
+    <h5 class="book-card-title">
+        <a href="{{ path('app_book_show', {slug: book.slug}) }}">
+            {{ book.title }}
+        </a>        
+    </h5>
+    <p class="card-text text-muted">{{ book.author }}{% if book.publishedAt %} ({{ book.publishedAt }}){% endif %}</p>
+    <div class="book-card-chip">
+        {% if book.isbn %}
+            ISBN : {{ book.isbn }}
+        {% endif %}
+        <div>Créé : {{ book.createdAt ? book.createdAt|date('d/m/Y H:i') : '' }}</div>
+        <div>Mis à jour : {{ book.updatedAt ? book.updatedAt|date('d/m/Y H:i') : '' }}</div>
+    </div>
+    <div class="d-grid gap-2">
+        <a class="btn btn-outline-secondary" href="{{ path('app_book_edit', {'slug': book.slug}) }}">edit</a>
+    </div>
+  </div>
+</div>

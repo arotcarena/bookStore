@@ -3,11 +3,13 @@
 {% block title %}Edit Book{% endblock %}
 
 {% block body %}
-    <h1>Edit Book</h1>
+    <h1>Modifier un livre</h1>
+
+    <div class="m-4">
+        <a class="btn btn-outline-secondary" href="{{ path('app_book_index') }}">Retour</a>
+    </div>
 
     {{ include('book/_form.html.twig', {'button_label': 'Update'}) }}
-
-    <a href="{{ path('app_book_index') }}">back to list</a>
 
     {{ include('book/_delete_form.html.twig') }}
 {% endblock %}

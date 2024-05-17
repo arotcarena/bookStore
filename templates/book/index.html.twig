@@ -1,59 +1,30 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Book index{% endblock %}
+{% block title %}Tous les livres{% endblock %}
 
 {% block body %}
-    <h1>Book index</h1>
+    <h1>Tous les livres</h1>
+
+    <div class="m-4">
+        <a type="button" class="btn btn-success" href="{{ path('app_book_new') }}">Ajouter</a>
+    </div>
 
     {# total items count #}
-    <div class="count">
+    <div class="count mt-4 mb-4">
         <strong>{{ pagination.getTotalItemCount }} résultats</strong>
     </div>
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Image</th>
-                <th>Title</th>
-                <th>Author</th>
-                <th>PublishedAt</th>
-                <th>Isbn</th>
-                <th>CreatedAt</th>
-                <th>UpdatedAt</th>
-                <th>actions</th>
-            </tr>
-        </thead>
-        <tbody>
+    <div class="book-card-list">
         {% for book in pagination %}
-            <tr>
-                <td>
-                    {% if book.thumbnail %}
-                        <img src="{{ book.thumbnail }}" alt="book picture">
-                    {% endif %}
-                </td>
-                <td>{{ book.title }}</td>
-                <td>{{ book.author }}</td>
-                <td>{{ book.publishedAt }}</td>
-                <td>{{ book.isbn }}</td>
-                <td>{{ book.createdAt ? book.createdAt|date('Y-m-d H:i:s') : '' }}</td>
-                <td>{{ book.updatedAt ? book.updatedAt|date('Y-m-d H:i:s') : '' }}</td>
-                <td>
-                    <a href="{{ path('app_book_show', {'slug': book.slug}) }}">show</a>
-                    <a href="{{ path('app_book_edit', {'slug': book.slug}) }}">edit</a>
-                </td>
-            </tr>
+                {% include "book/_book_card.html.twig" %}
         {% else %}
-            <tr>
-                <td colspan="8">no records found</td>
-            </tr>
+            <div>Aucun résultat.</div>
         {% endfor %}
-        </tbody>
-    </table>
+    </div>
 
     {# display navigation #}
-    <div class="navigation">
+    <div class="navigation mt-4 mb-4">
         {{ knp_pagination_render(pagination) }}
     </div>
 
-    <a href="{{ path('app_book_new') }}">Create new</a>
 {% endblock %}

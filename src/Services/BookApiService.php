@@ -39,6 +39,10 @@ class BookApiService
 
             $infos = $correctItem->volumeInfo;
             //on ajoute les infos à l'objet Book
+            if(isset($infos->industryIdentifiers) && isset($infos->industryIdentifiers[0]) && isset($infos->industryIdentifiers[0]->identifier))
+            {
+                $book->setIsbn($infos->industryIdentifiers[0]->identifier);
+            }
             if(isset($infos->publishedDate))
             {
                 $book->setPublishedAt($infos->publishedDate);

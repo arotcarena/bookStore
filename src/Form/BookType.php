@@ -20,12 +20,26 @@ class BookType extends AbstractType
                 'label' => 'Auteur *'
             ])
         ;
+
+        if($options['isEditing'])
+        {
+            $builder
+            ->add('isbn', TextType::class, [
+                'required' => false,
+                'label' => 'ISBN'
+            ])
+            ->add('publishedAt', TextType::class, [
+                'required' => false,
+                'label' => 'Date de publication'
+            ]);
+        }
     }
 
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
             'data_class' => Book::class,
+            'isEditing' => false
         ]);
     }
 }

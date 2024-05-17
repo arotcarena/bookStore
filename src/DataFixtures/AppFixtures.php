@@ -49,7 +49,7 @@ class AppFixtures extends Fixture
             $book = new Book;
             $book->setTitle($faker->text(20))
                 ->setAuthor($faker->name())
-                ->setPublishedAt(new DateTimeImmutable($faker->dateTime()->format('Y:m:d H:i:s')))
+                ->setPublishedAt($faker->dateTime()->format('Y'))
                 ->setCreatedAt(new DateTimeImmutable($faker->dateTime()->format('Y:m:d H:i:s')))
                 ->setUpdatedAt(new DateTimeImmutable($faker->dateTime()->format('Y:m:d H:i:s')))
                 ->setUser($faker->randomElement($users))

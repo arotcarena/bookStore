@@ -8,15 +8,19 @@ use App\Repository\BookRepository;
 use App\Services\BookApiService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Component\String\Slugger\SluggerInterface;
 
 class BookController extends AbstractController
 {
     public function __construct(
-        private BookApiService $bookApiService
+        private BookApiService $bookApiService,
+        private BookRepository $bookRepository,
+        private SluggerInterface $slugger
     )
     {
         
@@ -41,13 +45,19 @@ class BookController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $book->setUser($this->getUser());
-            $this->bookApiService->completeBookInfos($book);
+            //on vérifie que le slug est unique 
+            $slug = $this->slugger->slug($book->getTitle())->lower()->toString();
+            if(!$this->bookRepository->findOneBySlug($slug))
+            {
+                $book->setUser($this->getUser());
+                $this->bookApiService->completeBookInfos($book);
 
-            $entityManager->persist($book);
-            $entityManager->flush();
-
-            return $this->redirectToRoute('app_book_index', [], Response::HTTP_SEE_OTHER);
+                $entityManager->persist($book);
+                $entityManager->flush();
+                return $this->redirectToRoute('app_book_index', [], Response::HTTP_SEE_OTHER);
+            }
+            //sinon on ajoute l'erreur
+            $form->get('title')->addError((new FormError('Ce livre est déjà dans la bibliothèque')));
         }
 
         return $this->render('book/new.html.twig', [
@@ -68,12 +78,13 @@ class BookController extends AbstractController
     #[Route('/book/{slug}/edit', name: 'app_book_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Book $book, EntityManagerInterface $entityManager): Response
     {
-        $form = $this->createForm(BookType::class, $book);
+        $form = $this->createForm(BookType::class, $book, [
+            'isEditing' => true
+        ]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
-
             return $this->redirectToRoute('app_book_index', [], Response::HTTP_SEE_OTHER);
         }
 

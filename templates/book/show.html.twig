@@ -1,46 +1,41 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Book{% endblock %}
+{% block title %}{{book.title}}{% endblock %}
 
 {% block body %}
-    <h1>Book</h1>
 
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ book.id }}</td>
-            </tr>
-            <tr>
-                <th>Title</th>
-                <td>{{ book.title }}</td>
-            </tr>
-            <tr>
-                <th>Author</th>
-                <td>{{ book.author }}</td>
-            </tr>
-            <tr>
-                <th>PublishedAt</th>
-                <td>{{ book.publishedAt ? book.publishedAt|date('Y-m-d H:i:s') : '' }}</td>
-            </tr>
-            <tr>
-                <th>Isbn</th>
-                <td>{{ book.isbn }}</td>
-            </tr>
-            <tr>
-                <th>CreatedAt</th>
-                <td>{{ book.createdAt ? book.createdAt|date('Y-m-d H:i:s') : '' }}</td>
-            </tr>
-            <tr>
-                <th>UpdatedAt</th>
-                <td>{{ book.updatedAt ? book.updatedAt|date('Y-m-d H:i:s') : '' }}</td>
-            </tr>
-        </tbody>
-    </table>
+    <h1>{{book.title}}</h1>
 
-    <a href="{{ path('app_book_index') }}">back to list</a>
+    <div class="m-4">
+        <a class="btn btn-outline-secondary" href="{{ path('app_book_index') }}">Retour</a>
+    </div>
 
-    <a href="{{ path('app_book_edit', {'slug': book.slug}) }}">edit</a>
+    <div class="book-card" style="margin: 40px 20px">
+        {% if book.thumbnail %}
+            <a href="{{ path('app_book_show', {slug: book.slug}) }}">
+                <img src="{{ book.thumbnail }}" class="book-card-img" alt"book picture">
+            </a>
+        {% endif %}
+        <div class="book-card-body">
+            <h5 class="book-card-title">
+                <a href="{{ path('app_book_show', {slug: book.slug}) }}">
+                    {{ book.title }}
+                </a>        
+            </h5>
+            <p class="card-text text-muted">{{ book.author }}{% if book.publishedAt %} ({{ book.publishedAt }}){% endif %}</p>
+            <div class="book-card-chip">
+                {% if book.isbn %}
+                    ISBN : {{ book.isbn }}
+                {% endif %}
+                <div>Créé : {{ book.createdAt ? book.createdAt|date('d/m/Y H:i') : '' }}</div>
+                <div>Mis à jour : {{ book.updatedAt ? book.updatedAt|date('d/m/Y H:i') : '' }}</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-2">
+        <a class="btn btn-success" href="{{ path('app_book_edit', {'slug': book.slug}) }}">Modifier</a>
+    </div>
 
     {{ include('book/_delete_form.html.twig') }}
 {% endblock %}
