@@ -4,23 +4,19 @@ namespace App\Controller;
 
 use App\Entity\Book;
 use App\Form\BookType;
+use App\Persister\BookPersister;
 use App\Repository\BookRepository;
-use App\Services\BookApiService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
-use Symfony\Component\String\Slugger\SluggerInterface;
 
 class BookController extends AbstractController
 {
     public function __construct(
-        private BookApiService $bookApiService,
-        private BookRepository $bookRepository,
-        private SluggerInterface $slugger
+        private BookPersister $bookPersister
     )
     {
         
@@ -38,26 +34,18 @@ class BookController extends AbstractController
 
     #[IsGranted('ROLE_USER')]
     #[Route('/book/new', name: 'app_book_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
+    public function new(Request $request): Response
     {
         $book = new Book();
         $form = $this->createForm(BookType::class, $book);
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            //on vérifie que le slug est unique 
-            $slug = $this->slugger->slug($book->getTitle())->lower()->toString();
-            if(!$this->bookRepository->findOneBySlug($slug))
+        if($form->isSubmitted() && $form->isValid()) 
+        {
+            if($this->bookPersister->persist($book, $form, true))
             {
-                $book->setUser($this->getUser());
-                $this->bookApiService->completeBookInfos($book);
-
-                $entityManager->persist($book);
-                $entityManager->flush();
                 return $this->redirectToRoute('app_book_index', [], Response::HTTP_SEE_OTHER);
             }
-            //sinon on ajoute l'erreur
-            $form->get('title')->addError((new FormError('Ce livre est déjà dans la bibliothèque')));
         }
 
         return $this->render('book/new.html.twig', [
@@ -76,16 +64,19 @@ class BookController extends AbstractController
 
     #[IsGranted('ROLE_USER')]
     #[Route('/book/{slug}/edit', name: 'app_book_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Book $book, EntityManagerInterface $entityManager): Response
+    public function edit(Request $request, Book $book): Response
     {
         $form = $this->createForm(BookType::class, $book, [
             'isEditing' => true
         ]);
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->flush();
-            return $this->redirectToRoute('app_book_index', [], Response::HTTP_SEE_OTHER);
+        if($form->isSubmitted() && $form->isValid()) 
+        {
+            if($this->bookPersister->persist($book, $form))
+            {
+                return $this->redirectToRoute('app_book_index', [], Response::HTTP_SEE_OTHER);
+            }
         }
 
         return $this->render('book/edit.html.twig', [
