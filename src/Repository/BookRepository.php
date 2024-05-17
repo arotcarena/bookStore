@@ -5,15 +5,30 @@ namespace App\Repository;
 use App\Entity\Book;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Knp\Component\Pager\PaginatorInterface;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * @extends ServiceEntityRepository<Book>
  */
 class BookRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    public function __construct(ManagerRegistry $registry, private PaginatorInterface $paginator)
     {
         parent::__construct($registry, Book::class);
+    }
+
+    public function findPaginated(Request $request)
+    {
+        $query = $this->createQueryBuilder('b')
+                        ->orderBy('b.createdAt', 'DESC')
+                        ;
+
+        return $this->paginator->paginate(
+            $query,
+            $request->query->getInt('page', 1),
+            16
+        );
     }
 
     //    /**

@@ -5,6 +5,11 @@
 {% block body %}
     <h1>Book index</h1>
 
+    {# total items count #}
+    <div class="count">
+        <strong>{{ pagination.getTotalItemCount }} résultats</strong>
+    </div>
+
     <table class="table">
         <thead>
             <tr>
@@ -19,7 +24,7 @@
             </tr>
         </thead>
         <tbody>
-        {% for book in books %}
+        {% for book in pagination %}
             <tr>
                 <td>
                     {% if book.thumbnail %}
@@ -44,6 +49,11 @@
         {% endfor %}
         </tbody>
     </table>
+
+    {# display navigation #}
+    <div class="navigation">
+        {{ knp_pagination_render(pagination) }}
+    </div>
 
     <a href="{{ path('app_book_new') }}">Create new</a>
 {% endblock %}
