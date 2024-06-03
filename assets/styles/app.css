@@ -27,7 +27,6 @@ a {
     row-gap: 30px;
     column-gap: 40px;
     align-items: flex-start;
-    justify-content: space-between;
 }
 
 /*book card*/
